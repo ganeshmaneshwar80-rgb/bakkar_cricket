@@ -1,0 +1,36 @@
+name: Build Bakkar Cricket Website
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prepare folders
+        run: |
+          mkdir -p src supabase scripts
+          [ ! -f src/App.jsx ] && [ -f App.jsx ] && mv App.jsx src/
+          [ ! -f src/main.jsx ] && [ -f main.jsx ] && mv main.jsx src/
+          [ ! -f src/style.css ] && [ -f style.css ] && mv style.css src/
+          [ ! -f src/supabase.js ] && [ -f supabase.js ] && mv supabase.js src/
+          [ ! -f supabase/schema.sql ] && [ -f schema.sql ] && mv schema.sql supabase/
+          [ ! -f scripts/create-admin.mjs ] && [ -f create-admin.mjs ] && mv create-admin.mjs scripts/
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build website
+        run: npm run build
